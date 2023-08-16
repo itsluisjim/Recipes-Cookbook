@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, Output  } from '@angular/core';
+import { Component } from '@angular/core';
 
 @Component({
   selector: 'app-header',
@@ -9,10 +9,5 @@ export class HeaderComponent {
   
   collapsed = true;
 
-  @Output() toggleTab = new EventEmitter<string>();
 
-
-  onToggle(tab: string) {
-    this.toggleTab.emit(tab)
-  }
 }
