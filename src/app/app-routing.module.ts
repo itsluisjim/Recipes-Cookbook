@@ -11,12 +11,13 @@ const appRoutes: Routes = [
     { path: '', redirectTo: '/recipes', pathMatch: 'full' },
     {
         path: 'recipes', 
+        resolve: [recipesResolver],
         component: RecipeComponent,
         children: [
             { path: '', component: RecipeStartComponent },
             { path: 'new', component: RecipeEditComponent }, 
-            { path: ':id',component: RecipeDetailComponent, resolve: [recipesResolver] },
-            { path: ':id/edit', component: RecipeEditComponent, resolve: [recipesResolver] },
+            { path: ':id',component: RecipeDetailComponent },
+            { path: ':id/edit', component: RecipeEditComponent },
         ]
     },
     { path: 'shopping-list', component: ShoppingListComponent }
