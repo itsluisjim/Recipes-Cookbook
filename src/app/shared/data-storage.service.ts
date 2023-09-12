@@ -1,8 +1,8 @@
-import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { RecipeService } from '../recipes/recipes.service';
+import { Injectable } from '@angular/core';
+import { map, tap } from 'rxjs';
 import { Recipe } from '../recipes/recipes.model';
-import { MonoTypeOperatorFunction, Observable, map, tap } from 'rxjs';
+import { RecipeService } from '../recipes/recipes.service';
 
 @Injectable({ providedIn: 'root' })
 export class DataStorageService {
