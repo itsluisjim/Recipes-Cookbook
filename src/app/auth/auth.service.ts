@@ -1,6 +1,8 @@
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { catchError, throwError } from 'rxjs';
+import { BehaviorSubject, Subject, catchError, tap, throwError } from 'rxjs';
+import { User } from './user.model';
+import { Router } from '@angular/router';
 
 export interface AuthResponseData {
   idToken: string;
@@ -13,7 +15,9 @@ export interface AuthResponseData {
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
-  constructor(private http: HttpClient) {}
+  user = new BehaviorSubject<User>(null);
+
+  constructor(private http: HttpClient, private router: Router) {}
 
   signup(email: string, password: string) {
     return this.http
@@ -25,7 +29,17 @@ export class AuthService {
           returnSecureToken: true,
         }
       )
-      .pipe(catchError(this.errorHandler));
+      .pipe(
+        catchError(this.errorHandler),
+        tap((response) => {
+          this.handleAuthentication(
+            response.email,
+            response.localId,
+            response.idToken,
+            +response.expiresIn
+          );
+        })
+      );
   }
 
   login(email: string, password: string) {
@@ -38,7 +52,35 @@ export class AuthService {
           returnSecureToken: true,
         }
       )
-      .pipe(catchError(this.errorHandler));
+      .pipe(
+        catchError(this.errorHandler),
+        tap((response) => {
+          this.handleAuthentication(
+            response.email,
+            response.localId,
+            response.idToken,
+            +response.expiresIn
+          );
+        })
+      );
+  }
+
+  logout() {
+    this.user.next(null);
+    this.router.navigate(['./auth']);
+  }
+
+  private handleAuthentication(
+    email: string,
+    userId: string,
+    token: string,
+    expiresIn: number
+  ) {
+    const expirationDate = new Date(new Date().getTime() + expiresIn * 1000);
+
+    let user = new User(email, userId, token, expirationDate);
+
+    this.user.next(user);
   }
 
   private errorHandler(errorResponse: HttpErrorResponse) {
