@@ -148,7 +148,7 @@ export class AuthService {
         errorMessage = 'Too many attempts have been made. Try again later.';
         break;
       case 'EMAIL_NOT_FOUND':
-        errorMessage = 'This email does not exists.';
+        errorMessage = 'This email does not exist.';
         break;
       case 'INVALID_PASSWORD':
         errorMessage = 'Invalid email/password.';
