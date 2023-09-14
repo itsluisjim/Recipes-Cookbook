@@ -16,7 +16,7 @@ import { AuthResponseData, AuthService } from './auth.service';
 })
 export default class AuthComponent implements OnDestroy {
   isLoginMode = true;
-  isLoading = false;
+  isLoading = false; // controls loading spinner
   @ViewChild(PlaceholderDirective, { static: false })
   alertHostContainer: PlaceholderDirective;
 
@@ -36,6 +36,7 @@ export default class AuthComponent implements OnDestroy {
       return;
     }
 
+    // retrieve form data
     const email = authForm.value.email;
     const password = authForm.value.password;
 

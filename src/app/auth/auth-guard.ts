@@ -3,6 +3,11 @@ import { CanActivateFn, Router, UrlTree } from '@angular/router';
 import { Observable, map, take } from 'rxjs';
 import { AuthService } from './auth.service';
 
+/**
+ * Protects paths from being accessible if authorization
+ * is not established. Currenly only applied to /recipes
+ */
+
 export const AuthGuard: CanActivateFn = ():
   | boolean
   | UrlTree
@@ -13,7 +18,7 @@ export const AuthGuard: CanActivateFn = ():
   return authService.user.pipe(
     take(1),
     map((user) => {
-      const isAuth = !!user;
+      const isAuth = !!user; // same as user ? true : false;
       if (isAuth) {
         return true;
       }

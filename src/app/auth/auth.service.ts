@@ -34,6 +34,7 @@ export class AuthService {
       .pipe(
         catchError(this.errorHandler),
         tap((response) => {
+          // tap into response data to create a user
           this.handleAuthentication(
             response.email,
             response.localId,
@@ -57,6 +58,7 @@ export class AuthService {
       .pipe(
         catchError(this.errorHandler),
         tap((response) => {
+          // tap into response data to create a user
           this.handleAuthentication(
             response.email,
             response.localId,
@@ -67,6 +69,7 @@ export class AuthService {
       );
   }
 
+  // logs out a user and clears token from local storage
   logout() {
     this.user.next(null);
     this.router.navigate(['./auth']);
@@ -79,6 +82,8 @@ export class AuthService {
     this.tokenTimer = null;
   }
 
+  // creates a user, stores user in local storage and
+  // begin timers for automatic logout when token life expires
   private handleAuthentication(
     email: string,
     userId: string,
@@ -94,6 +99,8 @@ export class AuthService {
     localStorage.setItem('userData', JSON.stringify(user));
   }
 
+  // on inital load, this method checks for token in local storage
+  // uses info to create a user and recalculates token life and starts timer
   autoLogin() {
     const localData: {
       email: string;

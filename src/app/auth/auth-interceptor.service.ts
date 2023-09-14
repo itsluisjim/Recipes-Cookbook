@@ -8,6 +8,12 @@ import { Injectable } from '@angular/core';
 import { exhaustMap, take } from 'rxjs';
 import { AuthService } from './auth.service';
 
+
+/**
+ * All request are intercepted and depending on the request
+ * it will add a auth header if necessary.
+ */
+
 @Injectable()
 export class AuthInterceptorService implements HttpInterceptor {
   constructor(private authService: AuthService) {}
