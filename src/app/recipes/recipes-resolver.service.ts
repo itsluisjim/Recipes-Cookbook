@@ -8,6 +8,11 @@ import { DataStorageService } from '../shared/data-storage.service';
 import { Recipe } from './recipes.model';
 import { RecipeService } from './recipes.service';
 
+/**
+ * User to fetch recipes before a route is loaded,
+ * for this case we created a recipes resolver to be added to
+ * the /recipes path.
+ */
 
 export const recipesResolver: ResolveFn<Recipe[]> = (
     route: ActivatedRouteSnapshot,

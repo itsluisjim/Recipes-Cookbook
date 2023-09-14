@@ -6,11 +6,6 @@ import { RecipeService } from './recipes.service';
   templateUrl: './recipes.component.html',
   styleUrls: ['./recipes.component.css'],
 })
-export class RecipeComponent implements OnInit{
+export class RecipeComponent {
 
-  constructor() {}
-
-  ngOnInit() {
-    
-  }
 }
