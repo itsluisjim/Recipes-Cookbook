@@ -1,19 +1,31 @@
-import { Component } from '@angular/core';
+import {
+  Component,
+  OnDestroy,
+  ViewChild
+} from '@angular/core';
 import { NgForm } from '@angular/forms';
-import { AuthResponseData, AuthService } from './auth.service';
-import { Observable } from 'rxjs';
 import { Router } from '@angular/router';
+import { Observable, Subscription } from 'rxjs';
+import { AlertComponent } from '../shared/alert/alert.component';
+import { PlaceholderDirective } from '../shared/placeholder/placeholder.directive';
+import { AuthResponseData, AuthService } from './auth.service';
 
 @Component({
   selector: 'app-auth',
   templateUrl: './auth.component.html',
 })
-export default class AuthComponent {
+export default class AuthComponent implements OnDestroy {
   isLoginMode = true;
   isLoading = false;
-  error: string = null;
+  @ViewChild(PlaceholderDirective, { static: false })
+  alertHostContainer: PlaceholderDirective;
 
-  constructor(private authService: AuthService, private router: Router) {}
+  closeSub: Subscription;
+
+  constructor(
+    private authService: AuthService,
+    private router: Router,
+  ) {}
 
   onSwitchMode() {
     this.isLoginMode = !this.isLoginMode;
@@ -37,18 +49,45 @@ export default class AuthComponent {
     }
 
     authObservable.subscribe({
-        next: (response: any) => {
-          console.log(response);
-          this.isLoading = false;
-          this.router.navigate(['/recipes']);
-        },
-        error: (error: any) => {
-          this.isLoading = false;
-          this.error = error.message;
-        },
-        complete() {},
+      next: (response: any) => {
+        console.log(response);
+        this.isLoading = false;
+        this.router.navigate(['/recipes']);
+      },
+      error: (error: any) => {
+        this.isLoading = false;
+        this.showAlert(error.message);
+      },
+      complete() {},
     });
 
     authForm.reset();
+  }
+
+  // this is how to programmatically create a component using code.
+  // could have easily done this alert pop up with a simple *ngIf directive.
+  private showAlert(message: string) {
+
+    // access the placeholder where your component is to be rendered
+    const hostViewContainerRef = this.alertHostContainer.viewContainerRef;
+
+    // clear content
+    hostViewContainerRef.clear();
+
+    // create a component
+    const componentRef = hostViewContainerRef.createComponent<AlertComponent>(AlertComponent)
+
+
+    componentRef.instance.message = message;
+    this.closeSub = componentRef.instance.close.subscribe(() => {
+      this.closeSub.unsubscribe();
+      hostViewContainerRef.clear();
+    });
+  }
+
+  ngOnDestroy(): void {
+    if (this.closeSub) {
+      this.closeSub.unsubscribe();
+    }
   }
 }
