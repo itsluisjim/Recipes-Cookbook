@@ -14,7 +14,7 @@ import { AuthResponseData, AuthService } from './auth.service';
   selector: 'app-auth',
   templateUrl: './auth.component.html',
 })
-export default class AuthComponent implements OnDestroy {
+export class AuthComponent implements OnDestroy {
   isLoginMode = true;
   isLoading = false; // controls loading spinner
   @ViewChild(PlaceholderDirective, { static: false })
@@ -51,7 +51,6 @@ export default class AuthComponent implements OnDestroy {
 
     authObservable.subscribe({
       next: (response: any) => {
-        console.log(response);
         this.isLoading = false;
         this.router.navigate(['/recipes']);
       },
