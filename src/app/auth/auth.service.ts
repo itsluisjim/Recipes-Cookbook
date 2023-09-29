@@ -4,6 +4,7 @@ import { Router } from '@angular/router';
 import { BehaviorSubject, catchError, tap, throwError } from 'rxjs';
 import { User } from './user.model';
 import { environment } from 'src/env/environment';
+import { RecipeService } from '../recipes/recipes.service';
 
 export interface AuthResponseData {
   idToken: string;
@@ -19,7 +20,7 @@ export class AuthService {
   user = new BehaviorSubject<User>(null);
   tokenTimer: any;
 
-  constructor(private http: HttpClient, private router: Router) {}
+  constructor(private http: HttpClient, private router: Router, private recipeService: RecipeService) {}
 
   signup(email: string, password: string) {
     return this.http
@@ -69,11 +70,13 @@ export class AuthService {
       );
   }
 
-  // logs out a user and clears token from local storage
+  // logs out a user and clears user data from local storage
+  // & clears array of recipes in recipe service
   logout() {
     this.user.next(null);
     this.router.navigate(['./auth']);
     localStorage.removeItem('userData');
+    this.recipeService.setRecipes([]);
 
     if (this.tokenTimer) {
       clearTimeout(this.tokenTimer);
