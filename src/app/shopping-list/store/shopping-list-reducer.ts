@@ -1,18 +1,46 @@
-import { Ingredient } from "src/app/shared/ingredient.model";
-import * as ShoppingListActions from "./shopping-list.actions";
+import { Ingredient } from 'src/app/shared/ingredient.model';
+import * as ShoppingListActions from './shopping-list.actions';
 
 const initialState = {
-    ingredients: [new Ingredient('Garlic', 3)]
-}
+  ingredients: [new Ingredient('Garlic', 3)],
+};
 
-export function shoppingListReducer(state = initialState, action: ShoppingListActions.AddIngredient) {
-    switch(action.type){
-        case ShoppingListActions.ADD_INGREDIENT:
-            return {
-                ...state,
-                ingredients: [...state.ingredients, action.payload]
-            }
-        default:
-            return state;
-    }
+export function shoppingListReducer(
+  state = initialState,
+  action: ShoppingListActions.ShoppingListActions
+) {
+  switch (action.type) {
+    case ShoppingListActions.ADD_INGREDIENT:
+      return {
+        ...state,
+        ingredients: [...state.ingredients, action.payload],
+      };
+    case ShoppingListActions.ADD_INGREDIENTS:
+      return {
+        ...state,
+        ingredients: [...state.ingredients, ...action.payload],
+      };
+    case ShoppingListActions.UPDATE_INGREDIENT:
+      const ingredient = state.ingredients[action.payload.index];
+
+      const updatedIngredient = {
+        ...ingredient,
+        ...action.payload.ingredient
+      }
+
+      const updatedIngredients = [...state.ingredients];
+      updatedIngredients[action.payload.index] = updatedIngredient;
+
+      return {
+        ...state,
+        ingredients: updatedIngredients,
+      };
+    case ShoppingListActions.DELETE_INGREDIENT:
+      return {
+        ...state,
+        ingredients: state.ingredients.filter((ing, index) => index !== action.payload)
+      };
+    default:
+      return state;
+  }
 }
