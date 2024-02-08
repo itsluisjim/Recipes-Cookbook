@@ -2,6 +2,8 @@ import { inject } from '@angular/core';
 import { CanActivateFn, Router, UrlTree } from '@angular/router';
 import { Observable, map, take } from 'rxjs';
 import { AuthService } from './auth.service';
+import * as fromApp from '../store/app.reducer';
+import { Store } from '@ngrx/store';
 
 /**
  * Protects paths from being accessible if authorization
@@ -13,10 +15,13 @@ export const AuthGuard: CanActivateFn = ():
   | UrlTree
   | Promise<boolean | UrlTree>
   | Observable<boolean | UrlTree> => {
-  const authService = inject(AuthService);
+  const store = inject(Store<fromApp.AppState>);
   const router = inject(Router);
-  return authService.user.pipe(
+  return store.select('auth').pipe(
     take(1),
+    map(authState => {
+      return authState.user
+    }),
     map((user) => {
       const isAuth = !!user; // same as user ? true : false;
       if (isAuth) {
