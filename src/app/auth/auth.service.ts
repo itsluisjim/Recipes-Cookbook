@@ -5,6 +5,10 @@ import { BehaviorSubject, catchError, tap, throwError } from 'rxjs';
 import { User } from './user.model';
 import { environment } from 'src/env/environment';
 import { RecipeService } from '../recipes/recipes.service';
+import * as fromApp from '../store/app.reducer';
+import * as AuthActions from '../auth/store/auth.actions';
+
+import { Store } from '@ngrx/store';
 
 export interface AuthResponseData {
   idToken: string;
@@ -20,7 +24,7 @@ export class AuthService {
   user = new BehaviorSubject<User>(null);
   tokenTimer: any;
 
-  constructor(private http: HttpClient, private router: Router, private recipeService: RecipeService) {}
+  constructor(private http: HttpClient, private router: Router, private recipeService: RecipeService, private store: Store<fromApp.AppState>) {}
 
   signup(email: string, password: string) {
     return this.http
@@ -73,7 +77,8 @@ export class AuthService {
   // logs out a user and clears user data from local storage
   // & clears array of recipes in recipe service
   logout() {
-    this.user.next(null);
+    // this.user.next(null);
+    this.store.dispatch(new AuthActions.Logout());
     this.router.navigate(['./auth']);
     localStorage.removeItem('userData');
     this.recipeService.setRecipes([]);
@@ -97,7 +102,9 @@ export class AuthService {
 
     let user = new User(email, userId, token, expirationDate);
 
-    this.user.next(user);
+    this.store.dispatch(new AuthActions.Login({email: email, userId: userId, token: token, expiresIn: expirationDate}));
+
+    // this.user.next(user);
     this.autoLogout(expiresIn * 1000)
     localStorage.setItem('userData', JSON.stringify(user));
   }
@@ -125,6 +132,8 @@ export class AuthService {
 
     if (loadedUser.token) {
       this.user.next(loadedUser);
+      this.store.dispatch(new AuthActions.Login({email: loadedUser.email, userId: loadedUser.id, token: loadedUser.token, expiresIn: new Date(localData._tokenExpirationDate)}));
+
 
       const expirationTime = new Date(localData._tokenExpirationDate).getTime();
       const currentTime = new Date().getTime();
